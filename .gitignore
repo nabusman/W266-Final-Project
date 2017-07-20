@@ -101,4 +101,4 @@ ENV/
 .mypy_cache/
 
 # Specific to Project
-Data/
+data/
