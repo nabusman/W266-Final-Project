@@ -3,17 +3,20 @@ import shutil
 import json
 import cPickle as pickle
 from string import punctuation
-from random import choice
+from random import sample, seed
 
 import nltk
 import numpy as np
 from tqdm import tqdm
 from sklearn.feature_extraction.text import CountVectorizer
+from keras.preprocessing import sequence
+from tqdm import tqdm
 
 
 data_path = '../data'
+seed(101)
 reviews_path = os.path.join(data_path,'yelp_academic_dataset_review.json')
-classes = ['pos', 'neg']
+class_map = {'pos' : 1, 'neg' : 0}
 
 reviews = []
 ratings = []
@@ -27,9 +30,9 @@ with open(reviews_path) as review_file:
     # Set reviews to positive or negative, skip if ==3
     stars = review_json['stars']
     if stars > 3:
-      ratings.append(classes[0])
+      ratings.append(class_map['pos'])
     elif stars < 3:
-      ratings.append(classes[1])
+      ratings.append(class_map['neg'])
     else:
       continue
     review_text = review_json['text']
@@ -39,41 +42,54 @@ with open(reviews_path) as review_file:
     review_text = ' '.join([stemmer.stem(x) for x in nltk.word_tokenize(review_text)])
     reviews.append(review_text)
 
+max_len = max([len(x) for x in reviews])
+count_vect = CountVectorizer(stop_words = 'english', max_features = 10000)
+train_counts = count_vect.fit_transform(reviews)
+vocab = count_vect.get_feature_names()
+
 with open(os.path.join(data_path,'reviews.pickle'), 'wb') as pickle_file:
   pickle.dump(reviews, pickle_file, pickle.HIGHEST_PROTOCOL)
 
 with open(os.path.join(data_path,'ratings.pickle'), 'wb') as pickle_file:
   pickle.dump(ratings, pickle_file, pickle.HIGHEST_PROTOCOL)
 
-
-max_len = max([len(x) for x in reviews])
-count_vect = CountVectorizer(stop_words = 'english', max_features = 10000)
-train_counts = count_vect.fit_transform(reviews)
-vocab = count_vect.get_feature_names()
-
 with open(os.path.join(data_path,'vocabulary.pickle'), 'wb') as pickle_file:
   pickle.dump(vocab, pickle_file, pickle.HIGHEST_PROTOCOL)
 
-train_path = '../data/reviews/train'
-val_path = '../data/reviews/val'
-test_path = '../data/reviews/test'
+# Separate train, val, test reviews
+# Pick the ratio so that it equals a total of 1
+ratios = {'train' : .8, 'val' : .1, 'test' : .1}
+train_index = sample(xrange(len(reviews)), int(len(reviews) * ratios['train']))
+val_index = sample(xrange(len(reviews)), int(len(reviews) * ratios['val']))
+test_index = sample(xrange(len(reviews)), int(len(reviews) * ratios['test']))
 
-[os.makedirs(os.path.join(x,y)) for x in [train_path, val_path, test_path] for y in ['pos', 'neg'] if not os.path.exists(os.path.join(x,y))]
+# initialize empty arrays
+x_train = np.empty(len(train_index), dtype = np.object)
+x_val = np.empty(len(val_index), dtype = np.object)
+x_test = np.empty(len(test_index), dtype = np.object)
+y_train = np.array([ratings[x] for x in train_index])
+y_val = np.array([ratings[x] for x in val_index])
+y_test = np.array([ratings[x] for x in test_index])
 
-# Train:Validation:Test ratio of 8:1:1
-train_val_test_ratio = [train_path] * 8 + [val_path] * 1 + [test_path] * 1
-data_destination = [choice(train_val_test_ratio) for _ in xrange(len(reviews))]
-file_name = 0
+for idx,rev_idx in enumerate(tqdm(train_index)):
+  review = nltk.word_tokenize(reviews[rev_idx])
+  x_train[idx] = [vocab.index(w) for w in review if w in vocab]
 
-for i in tqdm(xrange(len(reviews))):
-  # For every review and ratings create a matrix of W x V (w is # of words in review and V is the size of the vocabulary)
-  review = nltk.word_tokenize(reviews[i])
-  rating = ratings[i]
-  matrix = []
-  for j in xrange(max_len):
-    row = [0] * len(vocab)
-    if j < len(review) and review[j] in vocab:
-      row[vocab.index(review[j])] = 1
-    matrix.append(row)
-  np.save(os.path.join(data_destination[i], rating, 'review_' + str(file_name)), np.array(matrix))
-  file_name += 1
+for idx,rev_idx in enumerate(tqdm(val_index)):
+  review = nltk.word_tokenize(reviews[rev_idx])
+  x_val[idx] = [vocab.index(w) for w in review if w in vocab]
+
+for idx,rev_idx in enumerate(tqdm(test_index)):
+  review = nltk.word_tokenize(reviews[rev_idx])
+  x_test[idx] = [vocab.index(w) for w in review if w in vocab]
+
+x_train = sequence.pad_sequences(x_train, maxlen=max_len)
+x_val = sequence.pad_sequences(x_val, maxlen=max_len)
+x_test = sequence.pad_sequences(x_test, maxlen=max_len)
+
+np.save(os.path.join(data_path, 'x_train'), x_train)
+np.save(os.path.join(data_path, 'y_train'), y_train)
+np.save(os.path.join(data_path, 'x_val'), x_val)
+np.save(os.path.join(data_path, 'y_val'), y_val)
+np.save(os.path.join(data_path, 'x_test'), x_test)
+np.save(os.path.join(data_path, 'y_test'), y_test)
