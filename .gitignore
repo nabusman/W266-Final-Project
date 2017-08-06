@@ -106,3 +106,4 @@ ENV/
 
 # Specific to Project
 data/
+model_data/
