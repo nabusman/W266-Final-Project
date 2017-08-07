@@ -9,10 +9,7 @@ from keras.models import Sequential
 from keras.layers import Dense, Dropout, Activation
 from keras.layers import Embedding
 from keras.layers import Conv1D, GlobalMaxPooling1D
-<<<<<<< HEAD
 from keras.layers.advanced_activations import LeakyReLU
-=======
->>>>>>> fcd1f6156ca8de45407fff5bda7f22f5e2f1a2c8
 from keras.callbacks import EarlyStopping
 from tqdm import tqdm
 
@@ -30,7 +27,6 @@ y_val = np.load(os.path.join(data_path, 'y_val.npy'))
 x_test = np.load(os.path.join(data_path, 'x_test.npy'))
 y_test = np.load(os.path.join(data_path, 'y_test.npy'))
 
-<<<<<<< HEAD
 max_len = x_train.shape[1]
 
 #-- Build Model --#
@@ -87,7 +83,6 @@ for parameters in parameter_list:
   model.save(os.path.join(model_path,model_name))
   del model
 
-=======
 #-- Build Model --#
 # Test number of conv layers (1,2,3), size of filter sizes (256,128,64), kernel sizes (5,4,3), embedding size (1000,5000) and leaky relu
 model = Sequential()
@@ -107,4 +102,3 @@ batch_size = 64
 epochs = 100
 model.fit(x_train, y_train, batch_size = batch_size, epochs = epochs,
   validation_data = (x_val, y_val), callbacks = [EarlyStopping(patience = 5)])
->>>>>>> fcd1f6156ca8de45407fff5bda7f22f5e2f1a2c8

@@ -42,26 +42,28 @@ with open(reviews_path) as review_file:
     review_text = ' '.join([stemmer.stem(x) for x in nltk.word_tokenize(review_text)])
     reviews.append(review_text)
 
-max_len = max([len(x) for x in reviews])
 count_vect = CountVectorizer(stop_words = 'english', max_features = 10000)
 train_counts = count_vect.fit_transform(reviews)
 vocab = count_vect.get_feature_names()
 
-with open(os.path.join(data_path,'reviews.pickle'), 'wb') as pickle_file:
+with open(os.path.join(data_path, 'full_data', 'reviews_all.pickle'), 'wb') as pickle_file:
   pickle.dump(reviews, pickle_file, pickle.HIGHEST_PROTOCOL)
 
-with open(os.path.join(data_path,'ratings.pickle'), 'wb') as pickle_file:
+with open(os.path.join(data_path, 'full_data', 'ratings_all.pickle'), 'wb') as pickle_file:
   pickle.dump(ratings, pickle_file, pickle.HIGHEST_PROTOCOL)
 
-with open(os.path.join(data_path,'vocabulary.pickle'), 'wb') as pickle_file:
+with open(os.path.join(data_path, 'full_data', 'vocabulary_all.pickle'), 'wb') as pickle_file:
   pickle.dump(vocab, pickle_file, pickle.HIGHEST_PROTOCOL)
+
+max_len = max([len(x) for x in reviews])
+reviews = reviews[:100000] # Take the first 100K reviews
 
 # Separate train, val, test reviews
 # Pick the ratio so that it equals a total of 1
 ratios = {'train' : .8, 'val' : .1, 'test' : .1}
-train_index = sample(xrange(len(reviews)), int(len(reviews) * ratios['train']))
-val_index = sample(xrange(len(reviews)), int(len(reviews) * ratios['val']))
-test_index = sample(xrange(len(reviews)), int(len(reviews) * ratios['test']))
+train_index = np.array(sample(xrange(len(reviews)), int(len(reviews) * ratios['train'])))
+val_index = np.array(sample(xrange(len(reviews)), int(len(reviews) * ratios['val'])))
+test_index = np.array(sample(xrange(len(reviews)), int(len(reviews) * ratios['test'])))
 
 # initialize empty arrays
 x_train = np.empty(len(train_index), dtype = np.object)
@@ -87,6 +89,10 @@ x_train = sequence.pad_sequences(x_train, maxlen=max_len)
 x_val = sequence.pad_sequences(x_val, maxlen=max_len)
 x_test = sequence.pad_sequences(x_test, maxlen=max_len)
 
+# Save arrays to disk
+np.save(os.path.join(data_path, 'train_index'), train_index)
+np.save(os.path.join(data_path, 'val_index'), val_index)
+np.save(os.path.join(data_path, 'test_index'), test_index)
 np.save(os.path.join(data_path, 'x_train'), x_train)
 np.save(os.path.join(data_path, 'y_train'), y_train)
 np.save(os.path.join(data_path, 'x_val'), x_val)
