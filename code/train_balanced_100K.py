@@ -9,7 +9,7 @@ from keras.preprocessing import sequence
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Activation, Flatten
 from keras.layers import Embedding
-from keras.layers import Conv1D, MaxPooling1D
+from keras.layers import Conv1D, BatchNormalization
 from keras.layers.advanced_activations import LeakyReLU
 from keras.callbacks import EarlyStopping
 from tqdm import tqdm
@@ -28,7 +28,7 @@ def train(conv_layers, filter_size, kernel_size, embedding_size, activation, mod
   #-- Build Model --#
   batch_size = 32
   epochs = 100
-  model_name = 'deep_sentiment_model_' + str(conv_layers) + '_' + str(filter_size) + '_' \
+  model_name = 'balanced_100K_deep_sentiment_model_' + str(conv_layers) + '_' + str(filter_size) + '_' \
     + str(kernel_size) + '_' + str(embedding_size) + '_' + str(activation) + '.h5'
   if os.path.exists(os.path.join(model_dir,model_name)):
     print 'Model exists.. skipping... ' + model_name
@@ -41,7 +41,7 @@ def train(conv_layers, filter_size, kernel_size, embedding_size, activation, mod
   for _ in range(conv_layers):
     model.add(Conv1D(filter_size, kernel_size, padding = 'valid'))
     model.add(Activation('relu')) if activation == 'relu' else model.add(LeakyReLU())
-    model.add(MaxPooling1D())
+    model.add(BatchNormalization())
 
   model.add(Flatten())
   model.add(Dense(150))

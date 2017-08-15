@@ -28,7 +28,7 @@ def train(conv_layers, filter_size, kernel_size, embedding_size, activation, mod
   #-- Build Model --#
   batch_size = 32
   epochs = 100
-  model_name = 'deep_sentiment_model_' + str(conv_layers) + '_' + str(filter_size) + '_' \
+  model_name = 'patient_500K_deep_sentiment_model_' + str(conv_layers) + '_' + str(filter_size) + '_' \
     + str(kernel_size) + '_' + str(embedding_size) + '_' + str(activation) + '.h5'
   if os.path.exists(os.path.join(model_dir,model_name)):
     print 'Model exists.. skipping... ' + model_name
@@ -52,7 +52,7 @@ def train(conv_layers, filter_size, kernel_size, embedding_size, activation, mod
   model.compile(loss = 'binary_crossentropy', optimizer = 'adam', metrics = ['accuracy'])
   #-- Train Model --#
   model.fit(x_train, y_train, batch_size = batch_size, epochs = epochs,
-    validation_data = (x_val, y_val), callbacks = [EarlyStopping(patience = 5)])
+    validation_data = (x_val, y_val), callbacks = [EarlyStopping(patience = 15)])
   if os.path.exists(os.path.join(model_dir,model_name)):
     print 'Model exists.. skipping... ' + model_name
     return

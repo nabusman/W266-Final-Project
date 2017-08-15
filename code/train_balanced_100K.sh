@@ -1,0 +1,25 @@
+python train_balanced_100K.py -m ../model_data -d ../data/balanced_100K -l 1 -f 64 -k 3 -e 500 -a relu;
+python train_balanced_100K.py -m ../model_data -d ../data/balanced_100K -l 1 -f 64 -k 3 -e 500 -a leakyrelu;
+python train_balanced_100K.py -m ../model_data -d ../data/balanced_100K -l 1 -f 64 -k 3 -e 1000 -a relu;
+python train_balanced_100K.py -m ../model_data -d ../data/balanced_100K -l 1 -f 64 -k 3 -e 1000 -a leakyrelu;
+python train_balanced_100K.py -m ../model_data -d ../data/balanced_100K -l 1 -f 64 -k 1 -e 500 -a relu;
+python train_balanced_100K.py -m ../model_data -d ../data/balanced_100K -l 1 -f 64 -k 1 -e 500 -a leakyrelu;
+python train_balanced_100K.py -m ../model_data -d ../data/balanced_100K -l 1 -f 64 -k 1 -e 1000 -a relu;
+python train_balanced_100K.py -m ../model_data -d ../data/balanced_100K -l 1 -f 64 -k 1 -e 1000 -a leakyrelu;
+python train_balanced_100K.py -m ../model_data -d ../data/balanced_100K -l 1 -f 128 -k 3 -e 500 -a relu;
+python train_balanced_100K.py -m ../model_data -d ../data/balanced_100K -l 1 -f 128 -k 3 -e 500 -a leakyrelu;
+python train_balanced_100K.py -m ../model_data -d ../data/balanced_100K -l 1 -f 128 -k 3 -e 1000 -a relu;
+python train_balanced_100K.py -m ../model_data -d ../data/balanced_100K -l 1 -f 128 -k 3 -e 1000 -a leakyrelu;
+python train_balanced_100K.py -m ../model_data -d ../data/balanced_100K -l 1 -f 128 -k 1 -e 500 -a relu;
+python train_balanced_100K.py -m ../model_data -d ../data/balanced_100K -l 1 -f 128 -k 1 -e 500 -a leakyrelu;
+python train_balanced_100K.py -m ../model_data -d ../data/balanced_100K -l 1 -f 128 -k 1 -e 1000 -a relu;
+python train_balanced_100K.py -m ../model_data -d ../data/balanced_100K -l 1 -f 128 -k 1 -e 1000 -a leakyrelu;
+python train_balanced_100K.py -m ../model_data -d ../data/balanced_100K -l 3 -f 64 -k 3 -e 500 -a relu;
+python train_balanced_100K.py -m ../model_data -d ../data/balanced_100K -l 3 -f 64 -k 3 -e 500 -a leakyrelu;
+python train_balanced_100K.py -m ../model_data -d ../data/balanced_100K -l 3 -f 64 -k 3 -e 1000 -a relu;
+python train_balanced_100K.py -m ../model_data -d ../data/balanced_100K -l 3 -f 64 -k 3 -e 1000 -a leakyrelu;
+python train_balanced_100K.py -m ../model_data -d ../data/balanced_100K -l 3 -f 64 -k 1 -e 500 -a relu;
+python train_balanced_100K.py -m ../model_data -d ../data/balanced_100K -l 3 -f 64 -k 1 -e 500 -a leakyrelu;
+python train_balanced_100K.py -m ../model_data -d ../data/balanced_100K -l 3 -f 64 -k 1 -e 1000 -a relu;
+python train_balanced_100K.py -m ../model_data -d ../data/balanced_100K -l 3 -f 64 -k 1 -e 1000 -a leakyrelu;
+

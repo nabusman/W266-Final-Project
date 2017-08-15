@@ -9,7 +9,7 @@ from keras.preprocessing import sequence
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Activation, Flatten
 from keras.layers import Embedding
-from keras.layers import Conv1D, MaxPooling1D
+from keras.layers import Conv1D, BatchNormalization
 from keras.layers.advanced_activations import LeakyReLU
 from keras.callbacks import EarlyStopping
 from tqdm import tqdm
@@ -23,12 +23,13 @@ def train(conv_layers, filter_size, kernel_size, embedding_size, activation, mod
   x_test = np.load(os.path.join(data_dir, 'x_test.npy'))
   y_test = np.load(os.path.join(data_dir, 'y_test.npy'))
 
+  num_classes = y_train.shape[1]
   max_len = x_train.shape[1]
 
   #-- Build Model --#
   batch_size = 32
   epochs = 100
-  model_name = 'deep_sentiment_model_' + str(conv_layers) + '_' + str(filter_size) + '_' \
+  model_name = 'multinomial_500K_sentiment_model_' + str(conv_layers) + '_' + str(filter_size) + '_' \
     + str(kernel_size) + '_' + str(embedding_size) + '_' + str(activation) + '.h5'
   if os.path.exists(os.path.join(model_dir,model_name)):
     print 'Model exists.. skipping... ' + model_name
@@ -37,19 +38,19 @@ def train(conv_layers, filter_size, kernel_size, embedding_size, activation, mod
   print 'Starting training on ' + model_name
   model = Sequential()
   model.add(Embedding(vocab_size, embedding_size, input_length = max_len))
-  model.add(Dropout(0.5))
+  # model.add(Dropout(0.5))
   for _ in range(conv_layers):
     model.add(Conv1D(filter_size, kernel_size, padding = 'valid'))
+    model.add(BatchNormalization())
     model.add(Activation('relu')) if activation == 'relu' else model.add(LeakyReLU())
-    model.add(MaxPooling1D())
 
   model.add(Flatten())
-  model.add(Dense(150))
-  model.add(Dropout(0.5))
+  model.add(Dense(100))
+  # model.add(Dropout(0.5))
   model.add(Activation('relu'))
-  model.add(Dense(1))
-  model.add(Activation('sigmoid'))
-  model.compile(loss = 'binary_crossentropy', optimizer = 'adam', metrics = ['accuracy'])
+  model.add(Dense(num_classes))
+  model.add(Activation('softmax'))
+  model.compile(loss = 'categorical_crossentropy', optimizer = 'adam', metrics = ['accuracy'])
   #-- Train Model --#
   model.fit(x_train, y_train, batch_size = batch_size, epochs = epochs,
     validation_data = (x_val, y_val), callbacks = [EarlyStopping(patience = 5)])

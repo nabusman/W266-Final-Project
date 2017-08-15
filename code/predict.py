@@ -4,6 +4,7 @@ import cPickle as pickle
 
 import numpy as np
 from keras.models import load_model
+from sklearn.metrics import accuracy_score
 
 
 def predict(model_path, x_test_path, y_test_path, vocab_path, results_dir):
@@ -27,7 +28,7 @@ def predict(model_path, x_test_path, y_test_path, vocab_path, results_dir):
 
 	model = load_model(model_path)
 	predictions = model.predict(x_test)
-
+	print('###### - ' + str(accuracy_score(y_test, map(lambda x: round(x), predictions))) + ' - ######')
 	with open(result_file_path, 'w') as results_file:
 		for i in xrange(len(predictions)):
 			results_file.write(' '.join([vocab[x] for x in x_test[i] if x != 0]).encode('utf-8').strip() + ',' + str(predictions[i][0]) + ',' + str(y_test[i]) + '\n')
