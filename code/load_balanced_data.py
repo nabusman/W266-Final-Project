@@ -148,13 +148,13 @@ for idx,rev_idx in enumerate(tqdm(val_index)):
   x_val[idx] = [vocab.index(w) for w in review if w in vocab]
 
 x_val = sequence.pad_sequences(x_val, maxlen=max_len)
-np.save(os.path.join(data_path, sample_folder, 'x_test'), x_test)
+np.save(os.path.join(data_path, sample_folder, 'x_val'), x_val)
 
 for idx,rev_idx in enumerate(tqdm(test_index)):
   review = nltk.word_tokenize(reviews[rev_idx])
   x_test[idx] = [vocab.index(w) for w in review if w in vocab]
 
 x_test = sequence.pad_sequences(x_test, maxlen=max_len)
-np.save(os.path.join(data_path, sample_folder, 'x_val'), x_val)
+np.save(os.path.join(data_path, sample_folder, 'x_test'), x_test)
 
 
